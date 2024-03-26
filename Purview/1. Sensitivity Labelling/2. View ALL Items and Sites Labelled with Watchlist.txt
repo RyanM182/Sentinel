@@ -1,0 +1,10 @@
+let watchlistMIPLabelling = (_GetWatchlist('MIPLabelling')) 
+| extend OldSensitivityLabelId=tostring(OldSensitivityLabelId)
+| extend SensitivityLabelId=tostring(SensitivityLabelId)
+| distinct SensitivityLabelId, LabelIdentifier;
+MicrosoftPurviewInformationProtection
+| where TimeGenerated >ago(90d)
+| sort by TimeGenerated desc 
+| project TimeGenerated, UserId, ClientIP, Operation, LabelEventType, RecordType, Application, Platform, ContentType, TargetLocation, ProtectionEventTypeName, ActionSource, ObjectId,SensitivityLabelId, OldSensitivityLabelId
+| lookup watchlistMIPLabelling on SensitivityLabelId
+| lookup watchlistMIPLabelling on $left.OldSensitivityLabelId==$right.SensitivityLabelId

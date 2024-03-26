@@ -1,0 +1,20 @@
+//NOTE: A Watchlist of your Sensitivity Labels is required to run this query. I have used a Watchlist named: MIPLabelling.
+
+let starttime=90d;
+let timeframe=1m;
+MicrosoftPurviewInformationProtection
+| where TimeGenerated > ago(90d)
+| where LabelEventType == "LabelDowngraded"
+| extend FileName = tostring(split(ObjectId,"/")[-1])
+| project LabelChangeTime=TimeGenerated, UserId, FileName
+| join kind=inner (
+EmailEvents
+| where EmailDirection == "Outbound"
+| project TimeGenerated,SenderMailFromAddress,RecipientEmailAddress,EmailDirection,NetworkMessageId
+| join kind=inner (EmailAttachmentInfo) on NetworkMessageId
+| project TimeGenerated,SenderMailFromAddress,RecipientEmailAddress,EmailDirection,NetworkMessageId,FileName
+)
+on FileName
+| project TimeGenerated,LabelChangeTime,EmailSendTime=TimeGenerated,SenderMailFromAddress,RecipientEmailAddress,EmailDirection,FileName,NetworkMessageId
+| extend LabeltoEmailTimeDeltaMins = datetime_diff('minute',LabelChangeTime,EmailSendTime)
+| project TimeGenerated,LabelChangeTime,EmailSendTime=TimeGenerated,SenderMailFromAddress,RecipientEmailAddress,EmailDirection,FileName,NetworkMessageId, LabeltoEmailTimeDeltaMins

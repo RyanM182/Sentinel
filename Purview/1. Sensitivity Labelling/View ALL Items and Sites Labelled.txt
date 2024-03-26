@@ -1,3 +1,0 @@
-//View ALL Files and Sites Labelling in the past 90-days.
-MicrosoftPurviewInformationProtection 
-| where TimeGenerated >ago(90d)

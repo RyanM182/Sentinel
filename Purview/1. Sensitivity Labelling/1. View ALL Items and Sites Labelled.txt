@@ -1,0 +1,3 @@
+//DEFAULT LOOK & FEEL FOR LABEL LOGGING
+MicrosoftPurviewInformationProtection 
+| where TimeGenerated >ago(90d)

@@ -1,3 +1,5 @@
+//NOTE: A Watchlist of your Sensitivity Labels is required to run this query. I have used a Watchlist named: MIPLabelling.
+
 let watchlistMIPLabelling = (_GetWatchlist('MIPLabelling')) 
 | extend OldSensitivityLabelId=tostring(OldSensitivityLabelId)
 | extend SensitivityLabelId=tostring(SensitivityLabelId)

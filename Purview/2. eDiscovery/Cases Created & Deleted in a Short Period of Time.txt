@@ -1,0 +1,19 @@
+let starttime = (90d); 
+CloudAppEvents 
+| where TimeGenerated >ago(starttime) 
+| where ActionType == "CaseAdded" 
+| extend CaseName = tostring(RawEventData.Case) 
+| extend CaseId = tostring(parse_json(tostring(RawEventData.ExtendedProperties))[0].Value) 
+| extend AdminCreated = tostring(RawEventData.UserId) 
+| project CaseId,CaseName, ActionType, AdminCreated, CaseAddedTime=TimeGenerated, Case = tostring(RawEventData.Case) 
+| join kind=inner ( 
+CloudAppEvents 
+| where TimeGenerated >ago(starttime) 
+| where ActionType == "CaseRemoved" 
+| extend CaseRemovedId = tostring(parse_json(tostring(RawEventData.ExtendedProperties))[0].Value) 
+| extend AdminDeleted = tostring(RawEventData.UserId) 
+| project TimeGenerated,CaseRemovedId, AccountDisplayName, CaseRemovedTime=TimeGenerated, ActionType, AdminDeleted 
+) on $left.CaseId == $right.CaseRemovedId 
+| extend eDiscoCaseTimeDeltaHours = datetime_diff('hour',CaseAddedTime,CaseRemovedTime) 
+| project CaseName, CaseId, eDiscoCaseTimeDeltaHours, ActionType, ActionType1, CaseAddedTime, CaseRemovedTime, AdminCreated, AdminDeleted 
+| sort by CaseAddedTime, CaseRemovedTime asc

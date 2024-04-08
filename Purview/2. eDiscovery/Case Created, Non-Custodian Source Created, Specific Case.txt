@@ -1,5 +1,5 @@
-let aCaseName = "InsertCaseName"; 
-let bStampedCaseId = "InsertCaseId"; 
+let aCaseName = "Insert Case Name"; 
+let bStampedCaseId = "Insert Case Id"; 
 let starttime = (90d); 
 CloudAppEvents 
 | where TimeGenerated >ago(starttime) 

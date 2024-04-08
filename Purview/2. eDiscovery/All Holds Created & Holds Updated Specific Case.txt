@@ -1,5 +1,5 @@
-let aCaseName = "Microsoft eDiscovery in Depth"; 
-let bCaseId = "1039742c-9425-4e5a-b3e9-40b8242fcd59"; 
+let aCaseName = "Add Your Case Name"; 
+let bCaseId = "Add Your Case Id"; 
 let starttime = (90d); 
 CloudAppEvents 
 | where TimeGenerated >ago(starttime) 

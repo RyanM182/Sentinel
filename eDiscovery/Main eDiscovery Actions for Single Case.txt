@@ -1,0 +1,19 @@
+let aCaseName = "InsertCaseName"; 
+let bStampedCaseId = "Insert CaseId"; 
+let starttime = (90d); 
+CloudAppEvents 
+| where TimeGenerated >ago(starttime) 
+| where ActionType in~ ("CaseAdded","CaseUpdated”,”CaseRemoved","CustodianCreated","NonCustodianSourceCreated","HoldCreated", "HoldUpdated","CaseMemberUpdated") 
+| extend CaseName = tostring(RawEventData.Case) 
+| extend NewCaseId = tostring(parse_json(tostring(RawEventData.ExtendedProperties))[0].Value) 
+| extend StampedCaseId = tostring(RawEventData.CaseId) 
+| extend eDiscoveryAdmin = tostring(RawEventData.UserId) 
+| extend NonCustodianSourceName = tostring(RawEventData.Name) 
+| extend NonCustodianSourceId = tostring(RawEventData.NonCustodianSourceId) 
+| extend CustodianContactEmail = tostring(RawEventData.ContactEmail) 
+| extend CustodianId = tostring(RawEventData.CustodianId) 
+| extend HoldDetails = tostring(parse_json(tostring(RawEventData.Parameters))[0].Value) 
+| extend CaseMembers = tostring(parse_json(tostring(RawEventData.Parameters))[0].Value) 
+| where CaseName in (aCaseName) or StampedCaseId in (bStampedCaseId) 
+| project TimeGenerated,CaseName,NewCaseId,StampedCaseId,eDiscoveryAdmin,CustodianContactEmail,CustodianId,NonCustodianSourceName,NonCustodianSourceId,HoldDetails,CaseMembers,ActionType 
+| sort by TimeGenerated asc 

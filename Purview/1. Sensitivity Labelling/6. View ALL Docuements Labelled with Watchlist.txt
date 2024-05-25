@@ -1,5 +1,0 @@
-MicrosoftPurviewInformationProtection
-| where TimeGenerated >ago(90d)
-| where Operation in~ ("FileSensitivityLabelApplied", "FileSensitivityLabelChanged") // filter for label-added events
-| summarize LabeledDocuments = make_list(ObjectId) by SensitivityLabelId, OldSensitivityLabelId, LabelEventType, ActionSource, ObjectId, Workload, UserId, RecordType, Operation, ClientIP, TimeGenerated // create a list of labeled documents for each label
-| sort by TimeGenerated asc

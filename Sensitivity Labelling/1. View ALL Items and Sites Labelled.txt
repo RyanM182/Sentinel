@@ -1,0 +1,2 @@
+MicrosoftPurviewInformationProtection 
+| where TimeGenerated >ago(90d)

@@ -1,0 +1,5 @@
+MicrosoftPurviewInformationProtection
+| where TimeGenerated > ago(90d)
+| where Operation in ("SensitivityLabelApplied","FileSensitivityLabelApplied","MipLabel")
+| summarize Count=count()by UserId, SensitivityLabelId, ObjectId, ItemName, LabelName, Workload, Application, Platform, DeviceName, ContentType
+| top 20 by Count

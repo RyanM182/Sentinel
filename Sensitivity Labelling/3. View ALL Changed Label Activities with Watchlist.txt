@@ -1,0 +1,13 @@
+//NOTE: A Watchlist of your Sensitivity Labels is required to run this query. I have used a Watchlist named: MIPLabelling.
+
+let watchlistMIPLabelling = (_GetWatchlist('MIPLabelling'))
+| extend OldSensitivityLabelId=tostring(OldSensitivityLabelId)
+| extend SensitivityLabelId=tostring(SensitivityLabelId)
+| distinct SensitivityLabelId, LabelIdentifier;
+MicrosoftPurviewInformationProtection
+//| where Operation == "FileSensitivityLabelChanged"
+| where TimeGenerated >ago(90d)
+| sort by TimeGenerated desc 
+| project TimeGenerated, UserId, ClientIP, Operation, RecordType, Application, Platform, ContentType, TargetLocation, ProtectionEventTypeName, ActionSource, ObjectId,SensitivityLabelId, OldSensitivityLabelId
+| lookup watchlistMIPLabelling on SensitivityLabelId
+| lookup watchlistMIPLabelling on $left.OldSensitivityLabelId==$right.SensitivityLabelId

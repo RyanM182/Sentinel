@@ -1,0 +1,23 @@
+let TargetUser = ("USERS SMTP ADDRESS");
+CloudAppEvents 
+| where TimeGenerated > ago (1d)
+| where ActionType == @"FileUploadedToCloud" 
+| extend UserId = tostring(RawEventData.UserId)
+| where UserId in~ (TargetUser)
+| extend FileLocationandName = tostring(RawEventData.ObjectId)
+| extend FileExtension = tostring(RawEventData.FileExtension)
+| extend FileSize = tostring(RawEventData.FileSize)
+| extend FileType = tostring(RawEventData.FileType)
+| extend Sha1 = tostring(RawEventData.Sha1)
+| extend Sha256 = tostring(RawEventData.Sha256)
+| extend Hidden = tostring(RawEventData.Hidden)
+| extend TargetCopyDomain = tostring(RawEventData.TargetDomain)
+| extend CopyApplication = tostring(RawEventData.Application)
+| extend CopyTime = tostring(RawEventData.CreationTime)
+| extend DeviceName = tostring(RawEventData.DeviceName)
+| extend ClientIP = tostring(RawEventData.ClientIP)
+| extend SentinelOperation = tostring(RawEventData.Operation)
+| extend RMSEncrypted = tostring(RawEventData.RMSEncrypted)
+| extend SensitivityLabelId = tostring(parse_json(tostring(RawEventData.SensitivityLabelEventData)).SensitivityLabelId)
+| extend Workload = tostring(RawEventData.Workload)
+| project TimeGenerated,ActionType,UserId,FileLocationandName,FileExtension,FileSize,FileType,Sha1,Sha256,Hidden,TargetCopyDomain,CopyApplication,CopyTime,DeviceName,ClientIP,SentinelOperation,RMSEncrypted,SensitivityLabelId,Workload
